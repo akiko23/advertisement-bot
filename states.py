@@ -8,7 +8,14 @@ class Advertisement(StatesGroup):
     price = State()
 
     class AdvertisementActions(StatesGroup):
+        class SearchStates(StatesGroup):
+            get_value = State()
+            check_value = State()
+            processing_value = State()
+
         del_action = State()
         change_param = State()
+
+
 
 
