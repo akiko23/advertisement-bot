@@ -53,13 +53,21 @@ def choose_param_to_change():
     return keyboard
 
 
-break_load_process_keyboard = InlineKeyboardMarkup()
-btn_cancel_load = InlineKeyboardButton(text='Отмена', callback_data='break_load_process')
-break_load_process_keyboard.insert(btn_cancel_load)
+break_load_process_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Отмена', callback_data='break_load_process')
+        ]
+    ]
+)
 
-break_changing_process_keyboard = InlineKeyboardMarkup()
-btn_cancel_change = InlineKeyboardButton(text='Отмена', callback_data='break_change_process')
-break_changing_process_keyboard.insert(btn_cancel_change)
+break_changing_process_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Отмена', callback_data='break_change_process')
+        ]
+    ]
+)
 
 back_to_main_menu = InlineKeyboardMarkup(
     inline_keyboard=
@@ -71,16 +79,16 @@ back_to_main_menu = InlineKeyboardMarkup(
 )
 
 
-def set_menu_on_watching(current_num, id):
-    all_ads_len = len(db.get_not_user_advertisements_data(id))
-
+def set_menu_on_watching(all_ads_len, current_num):
     inline_obj = []
-    if current_num == all_ads_len - 1:
+
+    if (current_num == all_ads_len - 1) and all_ads_len != 1:
         inline_obj = [InlineKeyboardButton('Предыдущее', callback_data='watch-prev')]
     elif current_num == 0:
         inline_obj = [InlineKeyboardButton('Следующее', callback_data='watch-next')]
     if 0 < current_num < all_ads_len - 1:
-        inline_obj = [InlineKeyboardButton('Предыдущее', callback_data='watch-prev'), InlineKeyboardButton('Следующее', callback_data='watch-next')]
+        inline_obj = [InlineKeyboardButton('Предыдущее', callback_data='watch-prev'),
+                      InlineKeyboardButton('Следующее', callback_data='watch-next')]
 
     return InlineKeyboardMarkup(
         inline_keyboard=
@@ -93,12 +101,48 @@ def set_menu_on_watching(current_num, id):
     )
 
 
+# def set_menu_on_definite_watching(all_ads_len, current_num):
+#     inline_obj = []
+#
+#     if (current_num == all_ads_len - 1) and all_ads_len != 1:
+#         inline_obj = [InlineKeyboardButton('Предыдущее', callback_data='watch_definite-prev')]
+#     elif current_num == 0:
+#         inline_obj = [InlineKeyboardButton('Следующее', callback_data='watch_definite-next')]
+#     if 0 < current_num < all_ads_len - 1:
+#         inline_obj = [InlineKeyboardButton('Предыдущее', callback_data='watch_definite-prev'),
+#                       InlineKeyboardButton('Следующее', callback_data='watch_definite-next')]
+#
+#     return InlineKeyboardMarkup(
+#         inline_keyboard=
+#         [
+#             inline_obj,
+#             [
+#                 InlineKeyboardButton('Вернуться в главное меню', callback_data='back-to_advertisement_menu')
+#             ]
+#         ]
+#     )
+
+
 def on_choose_advertisement(user_advertisements):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(text=ad[4], callback_data=f"useradvertisement_{ad[0]}")
                 for ad in user_advertisements
+            ],
+            [
+                InlineKeyboardButton('Вернуться в главное меню', callback_data='back-to_advertisement_menu')
+            ]
+        ]
+    )
+
+
+def watch_all_advertisements_options():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text='Поиск по названию', callback_data='all_advertisements-search'),
+                InlineKeyboardButton(text='Смотреть все', callback_data='all_advertisements-watch')
             ],
             [
                 InlineKeyboardButton('Вернуться в главное меню', callback_data='back-to_advertisement_menu')
