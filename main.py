@@ -1,5 +1,3 @@
-import random
-
 from aiogram import executor
 from aiogram.dispatcher import FSMContext
 
@@ -41,8 +39,7 @@ async def test(msg: types.Message):
 
 @dp.message_handler(commands=['menu'])
 async def reply_menu(msg: types.Message):
-    await bot.send_message(msg.from_user.id, 'Вы вошли в меню',
-                           reply_markup=markups.advertisement_menu())
+    await comeback_to_advert_menu(msg)
 
 
 @dp.message_handler(commands=['convert'])
@@ -67,7 +64,9 @@ async def break_load(call: types.CallbackQuery, state: FSMContext):
     await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
 
     await state.finish()
-    await bot.send_message(call.from_user.id, 'Вы отменили процесс изменения❌')
+    await bot.send_message(call.from_user.id, 'Вы отменили процесс изменения❌'
+    if state == Advertisement.AdvertisementActions.change_param
+    else 'Вы отменили действие❌')
 
 
 @dp.callback_query_handler(Text(startswith='back'))
@@ -83,46 +82,48 @@ async def comeback(call: types.CallbackQuery):
 
 @dp.callback_query_handler(Text(startswith='advertisement'), state=None)
 async def actions_with_advertisements(call: types.CallbackQuery):
-    id = call.from_user.id
+    user_id = call.from_user.id
     action = call.data.split('_')[1]
 
     if action == 'add':
-        if len(db.get_user_advertisements_data(id)) >= 7:
+        if len(db.get_user_advertisements_data(user_id)) >= 7:
             await bot.delete_message(call.from_user.id, call.message.message_id)
-            await bot.send_message(id, 'Нельзя выставлять больше 7 обьявлений!❌')
+            await bot.send_message(user_id, 'Нельзя выставлять больше 7 обьявлений!❌')
 
         else:
             await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
 
             user_name = call.from_user.username
-            db.set_advertisement_user(id, user_name)
+            db.set_advertisement_user(user_id, user_name)
 
             await bot.send_message(call.from_user.id, 'Отправьте фото объявления',
                                    reply_markup=markups.break_load_process_keyboard)
             await Advertisement.photo.set()
 
     elif action == 'userwatch':
-        await watch_user_advertisements(call, id)
+        await watch_user_advertisements(call, call.from_user.id)
 
     elif action == 'watchall':
         await bot.delete_message(call.from_user.id, call.message.message_id)
-        await watch_all_advertisements_process(current_num, id)
+        await bot.send_message(call.from_user.id, 'Выберите опцию',
+                               reply_markup=markups.watch_all_advertisements_options())
 
-        @dp.callback_query_handler(Text(startswith='watch'))
-        async def watch_logic(callback: types.CallbackQuery):
+        @dp.callback_query_handler(Text(startswith='all_advertisements'))
+        async def watching_advertisements_actions(callback: types.CallbackQuery):
             act = callback.data.split('-')[1]
-            # random_num = random.randint(1, len(db.get_not_user_advertisements_data(id)) - 1)
 
-            current_num[0] += 1 if act == 'next' else -1
-
-            await bot.delete_message(callback.from_user.id, callback.message.message_id)
-            await watch_all_advertisements_process(current_num, id)
+            if act == 'search':
+                await Advertisement.AdvertisementActions.SearchStates.get_value.set()
+                await search_advertisements(callback, current_num)
+            elif act == 'watch':
+                await bot.delete_message(callback.from_user.id, callback.message.message_id)
+                await watch_all_advertisements_process(current_num=current_num, id=callback.from_user.id)
 
     elif action.startswith('change'):
         await bot.delete_message(call.from_user.id, call.message.message_id)
         unique_id = action.split('-')[1]
 
-        await bot.send_message(id, 'Выберите, что хотите изменить', reply_markup=markups.choose_param_to_change())
+        await bot.send_message(user_id, 'Выберите, что хотите изменить', reply_markup=markups.choose_param_to_change())
 
         @dp.callback_query_handler(Text(startswith='change'), state=None)
         async def start_changing_advertisement(change_call: types.CallbackQuery):
@@ -173,10 +174,10 @@ async def actions_with_advertisements(call: types.CallbackQuery):
         try:
             unique_id = int(advert_json.split('"caption"')[1].split('\\n')[2].split(': ')[1])
 
-            db.delete_advertisement(id, unique_id)
-            await bot.send_message(id, "Объявление успешно удалено✅", reply_markup=markups.back_to_main_menu)
+            db.delete_advertisement(user_id, unique_id)
+            await bot.send_message(user_id, "Объявление успешно удалено✅", reply_markup=markups.back_to_main_menu)
         except Exception as e:
-            await bot.send_message(id, "Объявление не удалено❌")
+            await bot.send_message(user_id, "Объявление не удалено❌")
 
 
 @dp.message_handler(content_types=['photo'], state=Advertisement.photo)
@@ -221,7 +222,10 @@ async def set_advertisement_description(message: types.Message):
 async def set_advertisement_price(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     try:
-        db.set_something(db.get_last_id(user_id), 'price', int(message.text))
+        if int(message.text) <= 50000:
+            db.set_something(db.get_last_id(user_id), 'price', int(message.text))
+        else:
+            raise ValueError
 
         last_user_advertisement = db.get_user_advertisements_data(user_id)[-1]
 
@@ -248,8 +252,7 @@ async def get_text_from_user(msg: types.Message):
         await bot.send_message(msg.from_user.id,
                                f"{quantity} {first_currency} это {convert_currencies(first_currency, quantity, second_currency)} {second_currency}")
 
-    except Exception as e:
-        print(e)
+    except Exception:
         await bot.send_message(msg.from_user.id, 'Я не понимаю, что это значит')
 
 
