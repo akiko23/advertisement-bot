@@ -39,7 +39,6 @@ class MediaGroupMiddleware(BaseMiddleware):
                 data["media_group"] = self._memo[media_group_id]["media_group"]
                 return await handler(event, data)
             return
-        data["media_group"] = None
         if self._memo:
             self._memo.clear()
         return await handler(event, data)

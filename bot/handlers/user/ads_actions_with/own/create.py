@@ -36,7 +36,7 @@ async def ad_title(
     
 
 # new ad's photo
-@router.message(CreateAdForm.photo, F.photo)
+@router.message(CreateAdForm.photo, F.photo & F.media_group_id)
 async def ad_photo(
     msg: types.Message, 
     state: FSMContext,
@@ -52,11 +52,33 @@ async def ad_photo(
 
     await state.set_state(CreateAdForm.description)
     await state.update_data({
-        "photo": [m.file_id for m in media_group] if media_group else [msg.photo[-1].file_id],
+        "photo": [m.file_id for m in media_group],
         "msg_on_delete": msg.message_id + len(media_group)
     })
     
     await msg.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.break_ad_creating_keyboard)        
+
+
+@router.message(CreateAdForm.photo, F.photo)
+async def ad_photo(
+    msg: types.Message, 
+    state: FSMContext,
+    bot: Bot,
+):
+    data = await state.get_data()
+
+    try:
+        await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
+    except:
+        logging.error(await state.get_data())
+
+    await state.set_state(CreateAdForm.description)
+    await state.update_data({
+        "photo": [msg.photo[-1].file_id],
+        "msg_on_delete": msg.message_id + 1
+    })
+
+    await msg.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.break_ad_creating_keyboard)
 
 
 # new ad's description
