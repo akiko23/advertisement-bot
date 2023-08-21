@@ -1,0 +1,12 @@
+# virtual environment
+venv/
+
+# cache files
+__pycache__
+*/__pycache__
+
+# secrets
+.env
+
+# ide
+.idea

@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+    db:
+        image: postgres:14-alpine
+        restart: "on-failure"
+        environment:
+            POSTGRES_PASSWORD: ${SUPERUSER_PASSWORD}
+        volumes:
+            - "/opt/app/pg/data:/var/lib/postgresql/data"
+            - "/opt/app/pg/init:/docker-entrypoint-initdb.d"
+        ports:
+          "5432:5432"
+    bot:
+        build: .
+        restart: "unless-stopped"
+        env_file: .env
+        command: sh -c "alembic upgrade head && python3 __main__.py"
+        depends_on:
+            - db
