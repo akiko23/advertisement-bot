@@ -9,7 +9,7 @@ services:
             - "/opt/app/pg/data:/var/lib/postgresql/data"
             - "/opt/app/pg/init:/docker-entrypoint-initdb.d"
         ports:
-          "5432:5432"
+            - "5432:5432"
     bot:
         build: .
         restart: "unless-stopped"
