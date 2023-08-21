@@ -6,4 +6,4 @@ RUN apt-get update \
     && pip3 install -r requirements.txt
 RUN chmod 755 .
 COPY . .
-CMD ["python", "__main__.py"]
+CMD ["python", "-m", "bot"]
