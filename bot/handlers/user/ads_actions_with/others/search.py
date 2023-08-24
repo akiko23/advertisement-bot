@@ -58,7 +58,7 @@ async def back_to_watch_others_menu(call: types.CallbackQuery, state: FSMContext
 @router.callback_query(SearchForAds.on_search, F.data == "back_to_ad_menu")
 async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: Database):
     user_id, data = call.from_user.id, await state.get_data()
-    for m_id in data["msgs_on_delete"]:
+    for m_id in data.get("msgs_on_delete", tuple()):
         try:
             await bot.delete_message(user_id, m_id)
         except:
