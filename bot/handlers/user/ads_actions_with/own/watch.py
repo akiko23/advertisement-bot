@@ -84,6 +84,6 @@ async def stop_watching(upd: types.Message | types.CallbackQuery, state: FSMCont
             await bot.delete_message(user_id, m_id)
         except:
             logging.warning(await state.get_data())
-            logging.info(f"On exception: {upd.message.message_id}")
+            logging.info(f"On exception: {upd.message.message_id if isinstance(upd, types.CallbackQuery) else upd.message_id}")
     await state.clear()
     await bot.send_message(user_id, 'Главное меню', reply_markup=mp.main_menu)
