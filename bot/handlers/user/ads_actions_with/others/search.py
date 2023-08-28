@@ -66,4 +66,6 @@ async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot
             logging.warning(await state.get_data())
             logging.error(f"On exception: {call.message.message_id}")
     await state.clear()
+
+    await bot.delete_message(call.from_user.id, call.message.message_id)
     await bot.send_message(user_id, 'Главное меню', reply_markup=mp.main_menu)
