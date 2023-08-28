@@ -26,6 +26,8 @@ async def get_value(msg: types.Message, state: FSMContext, bot: Bot, db: Databas
     res = [i for i in all_ads if value in (await get_ads_text(i, db))]
     if not res:
         await state.set_state(WatchAllAds.choose_option)
+
+        await bot.delete_message(msg.from_user.id, msg.message_id - 1)
         return await msg.answer("По вашему запросу не найдено ни одного объявления", reply_markup=mp.watch_all_ads_options)
     
     await state.set_state(WatchAllAds.on_watch)
