@@ -1,6 +1,5 @@
 import logging
 
-from dotenv import load_dotenv
 from aiogram import Bot, Router, F, types
 from aiogram.fsm.context import FSMContext
 from pydantic import UUID3
