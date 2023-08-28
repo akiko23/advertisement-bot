@@ -3,6 +3,7 @@ import logging
 from aiogram import Bot, Router, F, types
 from aiogram.fsm.context import FSMContext
 from asyncpg.exceptions import DataError
+from bot.consts import DEFAULT_AD_PHOTO
 
 from bot.db.requests_cls import Database
 from bot.functions.check_valid import check_valid_description, check_valid_title
@@ -25,15 +26,34 @@ async def ad_title(
     if exc_msg:
         return await msg.answer(
             exc_msg, 
-            reply_markup=mp.break_ad_creating_keyboard
+            reply_markup=mp.ad_creating_keyboard
         )
     await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
 
     await state.update_data(title=title, msg_on_delete=msg.message_id + 1)
     await state.set_state(CreateAdForm.photo)
 
-    return await msg.answer("Отправьте фото вашего объявления (можно несколько)", reply_markup=mp.break_ad_creating_keyboard)
+    return await msg.answer("Отправьте фото вашего объявления (можно несколько)", reply_markup=mp.ad_creating_keyboard_on_photo)
     
+
+# if user skips photo step
+@router.callback_query(CreateAdForm.photo, F.data == "skip_adding_photo")
+async def skip_adding_photo(call: types.CallbackQuery, state: FSMContext, bot: Bot):
+    data = await state.get_data()
+
+    try:
+        await bot.delete_message(call.from_user.id, data["msg_on_delete"])
+    except:
+        logging.error(await state.get_data())
+
+    await state.set_state(CreateAdForm.description)
+    await state.update_data({
+        "photo": [DEFAULT_AD_PHOTO],
+        "msg_on_delete": call.message.message_id + 1
+    })
+
+    await call.message.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.ad_creating_keyboard)
+
 
 # new ad's photo
 @router.message(CreateAdForm.photo, F.photo & F.media_group_id)
@@ -56,7 +76,7 @@ async def ad_photo(
         "msg_on_delete": msg.message_id + len(media_group)
     })
     
-    await msg.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.break_ad_creating_keyboard)        
+    await msg.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.ad_creating_keyboard)       
 
 
 @router.message(CreateAdForm.photo, F.photo)
@@ -78,7 +98,9 @@ async def ad_photo(
         "msg_on_delete": msg.message_id + 1
     })
 
-    await msg.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.break_ad_creating_keyboard)
+    await msg.answer("Введите описание (длина - минимум 25 символов)", reply_markup=mp.ad_creating_keyboard)
+
+
 
 
 # new ad's description
@@ -99,13 +121,13 @@ async def ad_description(
     if exc_msg:
         return await msg.answer(
             exc_msg, 
-            reply_markup=mp.break_ad_creating_keyboard
+            reply_markup=mp.ad_creating_keyboard
         )
 
     await state.set_state(CreateAdForm.price)
     await state.update_data(description=description, msg_on_delete=msg.message_id + 1)
     
-    await msg.answer("И наконец, укажите цену в $ (в пределах 40000)", reply_markup=mp.break_ad_creating_keyboard)
+    await msg.answer("И наконец, укажите цену в $ (в пределах 40000)", reply_markup=mp.ad_creating_keyboard)
     
 
 # new ad's price
@@ -154,4 +176,4 @@ async def break_ad_creating(
 
 @router.message(CreateAdForm.photo, ~F.photo)
 async def incorrect_ad_data_format(msg: types.Message):
-    await msg.answer("Некорректный тип данных, ожидалось photo", reply_markup=mp.break_ad_creating_keyboard)
+    await msg.answer("Некорректный тип данных, ожидалось photo", reply_markup=mp.ad_creating_keyboard)

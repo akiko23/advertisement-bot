@@ -28,7 +28,7 @@ async def create_new_ad(
     await state.set_state(CreateAdForm.title)
     await state.update_data(msg_on_delete=call.message.message_id)
 
-    await call.message.edit_text("Введите заголовок объявления", reply_markup=mp.break_ad_creating_keyboard)
+    await call.message.edit_text("Введите заголовок объявления", reply_markup=mp.ad_creating_keyboard)
 
 
 @router.callback_query(MainAdMenuOption.filter(F.action == "watch_own_ads"))

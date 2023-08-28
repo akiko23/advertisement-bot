@@ -33,8 +33,20 @@ ad_params_on_edit = InlineKeyboardMarkup(
     )
 
 
-break_ad_creating_keyboard = InlineKeyboardMarkup(
+ad_creating_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Отмена', callback_data='break_ad_creating')
+        ]
+    ]
+)
+
+
+ad_creating_keyboard_on_photo = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Пропустить', callback_data='skip_adding_photo')
+        ],
         [
             InlineKeyboardButton(text='Отмена', callback_data='break_ad_creating')
         ]
