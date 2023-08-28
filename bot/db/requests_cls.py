@@ -45,6 +45,12 @@ class Database:
         )
 
 
+    async def get_all_users(self):
+        return await self._request_to_db(
+            AsyncSession.scalars,
+            select(User.user_id)
+        )
+
     async def _get_last_ad_id(self):
         return await self._request_to_db(
             AsyncSession.scalar,
