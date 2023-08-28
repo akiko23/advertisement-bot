@@ -73,6 +73,7 @@ async def delete_ad(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: 
 
     await bot.send_message(user_id, "Объявление успешно удалено", reply_markup=mp.main_menu)
 
+
 @router.message(WatchUserAds())
 @router.callback_query(WatchUserAds())
 async def stop_watching(upd: types.Message | types.CallbackQuery, state: FSMContext, bot: Bot):
