@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from .callback_data_models import MainAdMenuOption, ParamOnEdit
+from .callback_data_models import MainAdMenuOption, ParamOnEdit, WatchAllAdsMenuOption
 
 
 main_menu = InlineKeyboardMarkup(
@@ -95,11 +95,11 @@ def kb_on_user_ad_watching(all_ads_len, current_num):
 watch_all_ads_options = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='Поиск по названию', callback_data='all_ads:search'),
-            InlineKeyboardButton(text='Смотреть все', callback_data='all_ads:watch')
+            InlineKeyboardButton(text='Поиск по названию', callback_data=WatchAllAdsMenuOption(action="search").pack()),
+            InlineKeyboardButton(text='Смотреть все', callback_data=WatchAllAdsMenuOption(action="watch_all").pack())
         ],
         [
-            InlineKeyboardButton(text='Вернуться в главное меню', callback_data='all_ads:back_to_ad_menu')
+            InlineKeyboardButton(text='Вернуться в главное меню', callback_data=WatchAllAdsMenuOption(action="back_to_ad_menu").pack())
         ]
     ]
 )

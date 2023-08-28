@@ -8,3 +8,6 @@ class MainAdMenuOption(CallbackData, prefix="ad"):
 class ParamOnEdit(CallbackData, prefix="param"):
     param_name: str
 
+
+class WatchAllAdsMenuOption(CallbackData, prefix="all_ads"):
+    action: str
