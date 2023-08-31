@@ -5,8 +5,8 @@ services:
         restart: "unless-stopped"
         volumes:
             # don't forget to put redis.conf to redis_config directory!
-            - "/opt/adbot/redis/config:/usr/local/etc/redis"
-            - "/opt/adbot/redis/data:/data"
+            - "/opt/app/redis/config:/usr/local/etc/redis"
+            - "/opt/app/redis/data:/data"
         command: "redis-server /usr/local/etc/redis/redis.conf"
     db:
         image: postgres:14-alpine
@@ -14,8 +14,8 @@ services:
         environment:
             POSTGRES_PASSWORD: ${SUPERUSER_PASSWORD}
         volumes:
-            - "/opt/adbot/pg/data:/var/lib/postgresql/data"
-            - "/opt/adbot/pg/init:/docker-entrypoint-initdb.d"
+            - "/opt/app/pg/data:/var/lib/postgresql/data"
+            - "/opt/app/pg/init:/docker-entrypoint-initdb.d"
         ports:
             - "5432:5432"      
     bot:
