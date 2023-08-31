@@ -14,8 +14,8 @@ router = Router()
 @router.message(
     (F.from_user.id == ADMIN_ID) & 
     (
-        (F.text & F.text.startswith("changelog")) | 
-        (F.caption & F.caption.startswith("changelog"))
+        (F.text & F.text.startswith("Changelog")) | 
+        (F.caption & F.caption.startswith("Changelog"))
     )
 )
 async def send_changelog(msg: types.Message, db: Database, bot: Bot):
