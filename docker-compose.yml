@@ -17,20 +17,12 @@ services:
             - "/opt/adbot/pg/data:/var/lib/postgresql/data"
             - "/opt/adbot/pg/init:/docker-entrypoint-initdb.d"
         ports:
-            - "5432:5432"
-    db_migrations:
-        build: .
-        restart: "on-failure"
-        env_file: .env
-        command: sh -c "python3 -m alembic upgrade head "
-        depends_on:
-            - db        
+            - "5432:5432"      
     bot:
         build: .
         restart: "unless-stopped"
         env_file: .env
-        command: sh -c "python3 -m bot"
+        command: sh -c "alembic upgrade head && python3 -m bot"
         depends_on:
             - db
-            - db_migrations
             - redis
