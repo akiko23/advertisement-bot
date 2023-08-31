@@ -7,6 +7,7 @@ class ProjectSettings(BaseSettings):
     postgres_dsn: str
     superuser_password: str
     superuser_user: Optional[str] = "admin"
+    redis_dsn: str
 
     class Config:
         env_file = '.env'

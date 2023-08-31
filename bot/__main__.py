@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
+from aiogram.fsm.storage.redis import RedisStorage
 
 from .db.requests_cls import Database
 
@@ -28,7 +29,7 @@ async def main():
     engine = create_async_engine(config.postgres_dsn, future=True, echo=False)
     session_pool = async_sessionmaker(engine, expire_on_commit=False)
 
-    dp = Dispatcher()
+    dp = Dispatcher(storage=RedisStorage.from_url(config.redis_dsn))
 
     # setup middlewares
     dp.message.middleware(MediaGroupMiddleware())

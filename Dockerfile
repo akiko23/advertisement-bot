@@ -1,5 +1,5 @@
 FROM python:3.10
-WORKDIR /app
+WORKDIR /adbot
 COPY requirements.txt .
 RUN apt-get update \
     && pip3 install --upgrade setuptools \
