@@ -29,7 +29,7 @@ async def main():
     engine = create_async_engine(config.postgres_dsn, future=True, echo=False)
     session_pool = async_sessionmaker(engine, expire_on_commit=False)
 
-    dp = Dispatcher(storage=RedisStorage.from_url(config.redis_dsn))
+    dp = Dispatcher()
 
     # setup middlewares
     dp.message.middleware(MediaGroupMiddleware())

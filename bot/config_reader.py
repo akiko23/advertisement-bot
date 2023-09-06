@@ -5,9 +5,9 @@ from pydantic_settings import BaseSettings
 class ProjectSettings(BaseSettings):    
     bot_token: str
     postgres_dsn: str
-    superuser_password: str
-    superuser_user: Optional[str] = "admin"
-    redis_dsn: str
+    postgres_password: str
+    postgres_user: Optional[str] = "postgres"
+    postgres_db: Optional[str] = "postgres"
 
     class Config:
         env_file = '.env'
