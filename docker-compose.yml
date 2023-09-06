@@ -1,23 +1,15 @@
 version: '3.8'
 services:
-    redis:
-        image: redis:6-alpine
-        restart: "unless-stopped"
-        volumes:
-            # don't forget to put redis.conf to redis_config directory!
-            - "/opt/app/redis/config:/usr/local/etc/redis"
-            - "/opt/app/redis/data:/data"
-        command: "redis-server /usr/local/etc/redis/redis.conf"
     db:
         image: postgres:14-alpine
         restart: "on-failure"
-        environment:
-            POSTGRES_PASSWORD: ${SUPERUSER_PASSWORD}
+        env_file:
+            - ./.env
         volumes:
             - "/opt/app/pg/data:/var/lib/postgresql/data"
             - "/opt/app/pg/init:/docker-entrypoint-initdb.d"
         ports:
-            - "5432:5432"      
+            - "5432:5432"
     bot:
         build: .
         restart: "unless-stopped"
@@ -25,4 +17,3 @@ services:
         command: sh -c "alembic upgrade head && python3 -m bot"
         depends_on:
             - db
-            - redis
