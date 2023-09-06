@@ -4,7 +4,7 @@ services:
         image: postgres:14.8-alpine3.18
         env_file: .env
         volumes:
-        - habrdb-data:/var/lib/postgresql/data
+        - adbotdb-data:/var/lib/postgresql/data
         ports:
         - "5432:5432"
     bot:
@@ -15,4 +15,4 @@ services:
         depends_on:
             - db
 volumes:
-    habrdb-data:
+    adbotdb-data:
