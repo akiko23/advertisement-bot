@@ -16,17 +16,19 @@ from .handlers.options import router as options_router
 from .handlers.user import usr_main_router
 from .handlers.admin import admin_main_router
 
-from bot import consts
+from bot.consts import LOGGING_FORMAT
 from bot.config_reader import config
+
+from bot.db.config_reader import config as db_config
 
 
 async def main():
     logging.basicConfig(
-        level=logging.INFO, 
-        format=consts.LOGGING_FORMAT
+        level=logging.INFO,
+        format=LOGGING_FORMAT
     )
     # initialise database connection
-    engine = create_async_engine(config.postgres_dsn, future=True, echo=False)
+    engine = create_async_engine(db_config.postgres_dsn, future=True, echo=False)
     session_pool = async_sessionmaker(engine, expire_on_commit=False)
 
     dp = Dispatcher()
@@ -35,7 +37,7 @@ async def main():
     dp.message.middleware(MediaGroupMiddleware())
     dp.update.middleware(DbSessionMiddleware(db_obj=Database(pool=session_pool)))
 
-    dp.include_routers(options_router, usr_main_router, admin_main_router) 
+    dp.include_routers(options_router, usr_main_router, admin_main_router)
 
     bot = Bot(token=config.bot_token, parse_mode=ParseMode.HTML)
     await dp.start_polling(bot)

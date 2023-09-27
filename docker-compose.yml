@@ -1,8 +1,9 @@
 version: "3.9"
 services:
     db:
-        image: postgres:14.8-alpine3.18
-        env_file: .env
+        image: postgres:16.0-alpine3.18
+        restart: "always"
+        env_file: envs/db.env
         volumes:
         - adbotdb-data:/var/lib/postgresql/data
         ports:
@@ -10,7 +11,7 @@ services:
     bot:
         build: .
         restart: "unless-stopped"
-        env_file: .env
+        env_file: envs/bot.env
         command: sh -c "alembic upgrade head && python3 -m bot"
         depends_on:
             - db

@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from bot.db.models import Base
-from bot.config_reader import config as cfg
+from bot.db.config_reader import config as cfg
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
