@@ -22,7 +22,6 @@ async def send_changelog(msg: types.Message, db: Database, bot: Bot):
     for i, tg_id in enumerate(await db.get_all_users()):
         if i % 29 == 0:
             await asyncio.sleep(1.4)
-        else:
-            with suppress(TelegramNotFound, TelegramForbiddenError):
-                await bot.copy_message(from_chat_id=ADMIN_ID, chat_id=tg_id, message_id=msg.message_id)
+        with suppress(TelegramNotFound, TelegramForbiddenError):
+            await bot.copy_message(from_chat_id=ADMIN_ID, chat_id=tg_id, message_id=msg.message_id)
 
