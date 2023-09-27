@@ -12,8 +12,8 @@ from bot.markups.callback_data_models import MainAdMenuOption, WatchAllAdsMenuOp
 
 
 """
-The handlers below are not suitable
-for other files, so they were put here
+The handlers that were defined for
+choosing an option
 """
 
 
