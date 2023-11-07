@@ -5,16 +5,15 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
-from aiogram.fsm.storage.redis import RedisStorage
 
-from .db.requests_cls import Database
+from bot.db.repository import Repository
 
-from .middlewares.db_session import DbSessionMiddleware
-from .middlewares.media_group import MediaGroupMiddleware
+from bot.middlewares.db_session import DbSessionMiddleware
+from bot.middlewares.media_group import MediaGroupMiddleware
 
-from .handlers.options import router as options_router
-from .handlers.user import usr_main_router
-from .handlers.admin import admin_main_router
+from bot.handlers.options import router as options_router
+from bot.handlers.user import usr_main_router
+from bot.handlers.admin import admin_main_router
 
 from bot.consts import LOGGING_FORMAT
 from bot.config_reader import config
@@ -35,7 +34,7 @@ async def main():
 
     # setup middlewares
     dp.message.middleware(MediaGroupMiddleware())
-    dp.update.middleware(DbSessionMiddleware(db_obj=Database(pool=session_pool)))
+    dp.update.middleware(DbSessionMiddleware(db_obj=Repository(pool=session_pool)))
 
     dp.include_routers(options_router, usr_main_router, admin_main_router)
 

@@ -2,7 +2,7 @@ import logging
 from aiogram import Router, types, F, Bot
 from aiogram.fsm.context import FSMContext
 
-from bot.db.requests_cls import Database
+from bot.db.repository import Repository
 from bot.functions.watch_ads import watch_others_ad, watch_user_ad
 
 from bot.states.ad_actions import CreateAdForm, SearchForAds, WatchAllAds, WatchUserAds
@@ -35,7 +35,7 @@ async def watch_own_ads(
         call: types.CallbackQuery,
         state: FSMContext,
         bot: Bot,
-        db: Database
+        db: Repository
 ):
     await bot.delete_message(call.from_user.id, call.message.message_id)
 
@@ -57,7 +57,7 @@ async def watch_all_ads(call: types.CallbackQuery, state: FSMContext):
 
 # handlers on all ads watching
 @router.callback_query(WatchAllAds.choose_option, WatchAllAdsMenuOption.filter(F.action == "watch_all"))
-async def choose_option(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: Database):
+async def choose_option(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: Repository):
     await bot.delete_message(call.from_user.id, call.message.message_id)
 
     all_ads = await db.get_all_others_ads(call.from_user.id)

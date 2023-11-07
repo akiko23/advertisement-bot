@@ -4,7 +4,7 @@ from bot.consts import FORBIDDEN_CHARS
 DEFAULT_PREF = "❗️Некорректный формат\n"
 
 
-def check_valid_msg(text: str) -> tuple[str | None]:
+def check_valid_msg(text: str) -> tuple[str | None, ...]:
     if any(ch in text for ch in FORBIDDEN_CHARS):
         return None, DEFAULT_PREF + "Вы использовали запрещенный символ из этого списка: " + repr(FORBIDDEN_CHARS)
     return text, None

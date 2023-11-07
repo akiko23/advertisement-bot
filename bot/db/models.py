@@ -1,18 +1,17 @@
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    Integer, BIGINT,
     DateTime,
     CHAR, String,
-    UUID,
-    ARRAY,
+    ARRAY, ForeignKey, func,
 )
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
 from bot.consts import DEFAULT_AD_PHOTO
 
 
-__all__ = ("Base", "User", "Advertisement")
+__all__ = ('Base', 'User', 'Advertisement')
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -20,22 +19,24 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BIGINT, nullable=False)
-    username = Column(CHAR(40), nullable=False)
-    advertisements = Column(ARRAY(UUID))
+    user_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False, nullable=False)
+    username: Mapped[str] = mapped_column(CHAR(40), nullable=False)
+    advertisements: Mapped[list['Advertisement']] = relationship(
+        back_populates='user',
+        cascade='all, delete'
+    )
 
 
 class Advertisement(Base):
-    __tablename__ = "advertisement"
+    __tablename__ = 'advertisements'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    advertisement_id = Column(UUID, nullable=False)
-    title = Column(CHAR(40), nullable=False)
-    photo = Column(ARRAY(String), default=[DEFAULT_AD_PHOTO])
-    description = Column(String, nullable=False)
-    price = Column(Integer, nullable=False)
-    created_at = Column(DateTime, nullable=False)
-    owners_username = Column(CHAR(40))
+    advertisement_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    title: Mapped[str] = mapped_column(CHAR(40), nullable=False)
+    photo: Mapped[list[str]] = mapped_column(ARRAY(String), default=[DEFAULT_AD_PHOTO])
+    description: Mapped[str] = mapped_column(nullable=False)
+    price: Mapped[int] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.user_id', ondelete='CASCADE'))
+    user: Mapped['User'] = relationship(back_populates='advertisements', foreign_keys=[user_id])

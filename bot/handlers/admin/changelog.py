@@ -3,7 +3,7 @@ from contextlib import suppress
 import logging
 from aiogram import Router, types, F, Bot
 
-from bot.db.requests_cls import Database
+from bot.db.repository import Repository
 from bot.consts import ADMIN_ID, BOT_CHANNEL_ID
 
 router = Router()
@@ -16,7 +16,7 @@ router = Router()
             (F.caption & F.caption.startswith("Changelog"))
     )
 )
-async def send_changelog(msg: types.Message, db: Database, bot: Bot):
+async def send_changelog(msg: types.Message, db: Repository, bot: Bot):
     """
     Function that sends changelog to all users
     The mailing would'nt work well if you have a lot of users 

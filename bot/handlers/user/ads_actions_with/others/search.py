@@ -4,39 +4,41 @@ from aiogram import Bot, Router, F, types
 from aiogram.fsm.context import FSMContext
 from pydantic import UUID3
 
-from bot.db.requests_cls import Database
+from bot.db.models import Advertisement
+from bot.db.repository import Repository
 from bot.functions.watch_ads import watch_others_ad
 import bot.markups.markups as mp
 from bot.states.ad_actions import SearchForAds, WatchAllAds
 
-
 router = Router()
 
-async def get_ads_text(ad_id: UUID3, db: Database):
-    title, _, description, *__ = await db.get_ad_by_uid(ad_id)
+
+async def get_ad_text(ad: Advertisement, db: Repository):
+    title, _, description, *__ = await db.get_ad_by_id(ad.advertisement_id)
     return "|".join((title.strip(), description.strip())).lower()
 
 
 @router.message(SearchForAds.on_search, F.text)
-async def get_value(msg: types.Message, state: FSMContext, bot: Bot, db: Database):
+async def get_value(msg: types.Message, state: FSMContext, bot: Bot, db: Repository):
     value = msg.text.lower().strip()
-    
+
     all_ads = await db.get_all_others_ads(msg.from_user.id)
-    res = [i for i in all_ads if value in (await get_ads_text(i, db))]
+    res = [ad for ad in all_ads if value in (await get_ad_text(ad, db))]
     if not res:
         await state.set_state(WatchAllAds.choose_option)
 
         await bot.delete_message(msg.from_user.id, msg.message_id - 1)
-        return await msg.answer("По вашему запросу не найдено ни одного объявления", reply_markup=mp.watch_all_ads_options)
-    
+        return await msg.answer("По вашему запросу не найдено ни одного объявления",
+                                reply_markup=mp.watch_all_ads_options)
+
     await state.set_state(WatchAllAds.on_watch)
     await state.update_data(all_ads=res)
-    
+
     await bot.send_message(msg.from_user.id, "По вашему запросу найдено " + str(len(res)) + " объявл.")
     await watch_others_ad(
-        user_id=msg.from_user.id, 
-        msg_id=msg.message_id, 
-        state=state, 
+        user_id=msg.from_user.id,
+        msg_id=msg.message_id,
+        state=state,
         bot=bot,
         db=db,
         on_search=True
@@ -54,10 +56,10 @@ async def back_to_watch_others_menu(call: types.CallbackQuery, state: FSMContext
             logging.error(f"On exception: {call.message.message_id}")
     await state.set_state(WatchAllAds.choose_option)
     await bot.send_message(user_id, "Выберите действие", reply_markup=mp.watch_all_ads_options)
-    
-    
+
+
 @router.callback_query(SearchForAds.on_search, F.data == "back_to_ad_menu")
-async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: Database):
+async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: Repository):
     user_id, data = call.from_user.id, await state.get_data()
     for m_id in data.get("msgs_on_delete", tuple()):
         try:

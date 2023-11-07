@@ -9,5 +9,5 @@ DEFAULT_AD_PHOTO = "AgACAgIAAxkBAAMHZNTg9UT-pNtP-qVAweabOC5bLlwAAnrKMRupKalKAy9p
 # Your admin account id
 ADMIN_ID = 818525681
 
-# The channel of your bot (if you wanna do the mailing with bot)
+# The channel of your bot (if you want to do the mailing with bot)
 BOT_CHANNEL_ID = -1001234567
