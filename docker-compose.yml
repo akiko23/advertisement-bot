@@ -2,18 +2,28 @@ version: "3.9"
 services:
     db:
         image: postgres:16.0-alpine3.18
+        container_name: 'database'
         restart: "always"
+        networks:
+            - wg_bridge
         env_file: envs/db.env
         volumes:
-        - adbotdb-data:/var/lib/postgresql/data
+        - /psqldata:/var/lib/postgresql/data
         ports:
         - "5432:5432"
     bot:
         build: .
+        container_name: 'bot'
         restart: "unless-stopped"
+        networks:
+            - wg_bridge
         env_file: envs/bot.env
         command: sh -c "alembic upgrade head && python3 -m bot"
         depends_on:
             - db
 volumes:
     adbotdb-data:
+
+networks:
+  wg_bridge:
+    external: false
