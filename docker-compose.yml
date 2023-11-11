@@ -6,7 +6,7 @@ services:
         restart: "always"
         networks:
             - wg_bridge
-        env_file: envs/db.env
+        env_file: envs/bot.env
         volumes:
         - /psqldata:/var/lib/postgresql/data
         ports:

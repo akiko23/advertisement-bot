@@ -1,14 +1,14 @@
 from aiogram import Bot, Router, F, types
 from aiogram.exceptions import TelegramNotFound
 from aiogram.fsm.context import FSMContext
-from bot.functions.check_valid import check_valid_msg
+from bot.utils.check_valid import check_valid_msg
 from bot.db.repository import Repository
-from bot.functions.check_valid import check_valid_price
+from bot.utils.check_valid import check_valid_price
 
 from bot.states.ad_actions import EditAd, WatchUserAds
 
 import bot.markups.markups as mp
-from bot.functions.watch_ads import watch_user_ad
+from bot.utils.watch_ads import watch_user_ad
 
 router = Router()
 
@@ -35,7 +35,7 @@ async def set_param_to_change(call: types.CallbackQuery, state: FSMContext, bot:
 
 
 @router.message(EditAd.new_value, F.photo)
-async def set_new_val(
+async def set_new_photo(
         msg: types.Message,
         state: FSMContext,
         bot: Bot,
@@ -62,7 +62,7 @@ async def set_new_val(
 
 
 @router.message(EditAd.new_value, F.text)
-async def set_new_val(msg: types.Message, state: FSMContext, bot: Bot, db: Repository):
+async def set_new_text_value(msg: types.Message, state: FSMContext, bot: Bot, db: Repository):
     data = await state.get_data()
     match data["param_to_change"]:
         case "photo":

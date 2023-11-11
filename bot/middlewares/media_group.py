@@ -1,5 +1,3 @@
-import logging
-
 from typing import Dict, Any, Awaitable, Callable
 from asyncio import sleep
 
@@ -31,7 +29,7 @@ class MediaGroupMiddleware(BaseMiddleware):
                     "handled": False
                 }
             self._memo[media_group_id]["media_group"].append(content)
-            await sleep(0.4) # giving time to get and process other media
+            await sleep(0.4)  # giving time to get and process other media
 
             if not self._memo[media_group_id]["handled"]:
                 self._memo[media_group_id]["handled"] = True

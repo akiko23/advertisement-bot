@@ -1,6 +1,3 @@
-import asyncio
-from contextlib import suppress
-import logging
 from aiogram import Router, types, F, Bot
 
 from bot.db.repository import Repository

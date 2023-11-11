@@ -1,5 +1,4 @@
 import logging
-import uuid
 from sqlalchemy import ScalarResult, delete, select, insert, update
 
 from typing import Callable, List

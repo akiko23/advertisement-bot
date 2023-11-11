@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import Bot
 from aiogram.types.input_media_photo import InputMediaPhoto
 from aiogram.fsm.context import FSMContext
@@ -18,7 +16,6 @@ async def watch_user_ad(
     current_ad_ind: int = 0
 ):
     usr_ads: list[Advertisement] = (await state.get_data())["usr_ads"]
-    logging.warning((await state.get_data()))
 
     current_ad = usr_ads[current_ad_ind]
     title, photo, description, price = await db.get_ad_by_id(current_ad.advertisement_id)
@@ -44,7 +41,7 @@ async def watch_user_ad(
     )
 
 
-async def watch_others_ad(
+async def watch_others_ads(
     user_id: int, 
     msg_id: int, 
     state: FSMContext, 

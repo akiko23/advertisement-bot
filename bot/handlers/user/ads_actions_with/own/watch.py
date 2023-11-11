@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from bot.db.repository import Repository
 
-from bot.functions.watch_ads import watch_user_ad
+from bot.utils.watch_ads import watch_user_ad
 from bot.states.ad_actions import EditAd, WatchUserAds
 import bot.markups.markups as mp
 

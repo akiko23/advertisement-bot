@@ -1,12 +1,12 @@
 import logging
 
 from aiogram import Bot, Router, F, types
+from aiogram.exceptions import TelegramNotFound
 from aiogram.fsm.context import FSMContext
-from pydantic import UUID3
 
 from bot.db.models import Advertisement
 from bot.db.repository import Repository
-from bot.functions.watch_ads import watch_others_ad
+from bot.utils.watch_ads import watch_others_ads
 import bot.markups.markups as mp
 from bot.states.ad_actions import SearchForAds, WatchAllAds
 
@@ -35,7 +35,7 @@ async def get_value(msg: types.Message, state: FSMContext, bot: Bot, db: Reposit
     await state.update_data(all_ads=res)
 
     await bot.send_message(msg.from_user.id, "По вашему запросу найдено " + str(len(res)) + " объявл.")
-    await watch_others_ad(
+    await watch_others_ads(
         user_id=msg.from_user.id,
         msg_id=msg.message_id,
         state=state,
@@ -51,7 +51,7 @@ async def back_to_watch_others_menu(call: types.CallbackQuery, state: FSMContext
     for m_id in data["msgs_on_delete"]:
         try:
             await bot.delete_message(user_id, m_id)
-        except:
+        except TelegramNotFound:
             logging.warning(data)
             logging.error(f"On exception: {call.message.message_id}")
     await state.set_state(WatchAllAds.choose_option)
@@ -64,7 +64,7 @@ async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot
     for m_id in data.get("msgs_on_delete", tuple()):
         try:
             await bot.delete_message(user_id, m_id)
-        except:
+        except TelegramNotFound:
             logging.warning(await state.get_data())
             logging.error(f"On exception: {call.message.message_id}")
     await state.clear()

@@ -34,7 +34,7 @@ async def command_help(msg: types.Message):
     await msg.answer('Приветствую! Это бот для выставки объявлений. Воспользуйтесь кнопками в меню для работы '
                      'с ботом\nЕсли '
                      'вы нашли какой-то баг, или есть какие-то вопросы на счет бота, пишите разработчику '
-                     '@debriy2')
+                     '@akiko233')
 
 
 @router.message(Command(commands=['creator']))
@@ -42,6 +42,6 @@ async def command_creator(msg: types.Message):
     await msg.answer(msg.from_user.id, 'Cоздатель @akiko233')
 
 
-@router.message(Command(commands=['start']))
+@router.message()
 async def command_start_on_empty_username(msg: types.Message):
     await msg.answer("Для начала работы с ботом установите username в настройках телеграма")

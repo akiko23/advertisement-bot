@@ -3,7 +3,7 @@ from aiogram import Router, types, F, Bot
 from aiogram.fsm.context import FSMContext
 
 from bot.db.repository import Repository
-from bot.functions.watch_ads import watch_others_ad, watch_user_ad
+from bot.utils.watch_ads import watch_others_ads, watch_user_ad
 
 from bot.states.ad_actions import CreateAdForm, SearchForAds, WatchAllAds, WatchUserAds
 import bot.markups.markups as mp
@@ -69,7 +69,7 @@ async def choose_option(call: types.CallbackQuery, state: FSMContext, bot: Bot, 
         "all_ads": all_ads,
         "current_ad": 0
     })
-    await watch_others_ad(
+    await watch_others_ads(
         user_id=call.from_user.id,
         msg_id=call.message.message_id,
         state=state,

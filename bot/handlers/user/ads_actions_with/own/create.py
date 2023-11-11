@@ -7,7 +7,7 @@ from asyncpg.exceptions import DataError
 
 from bot.consts import DEFAULT_AD_PHOTO
 from bot.db.repository import Repository
-from bot.functions.check_valid import check_valid_description, check_valid_title
+from bot.utils.check_valid import check_valid_description, check_valid_title
 from bot.states.ad_actions import CreateAdForm
 import bot.markups.markups as mp
 
@@ -59,7 +59,7 @@ async def skip_adding_photo(call: types.CallbackQuery, state: FSMContext, bot: B
 
 # new ad's photo
 @router.message(CreateAdForm.photo, F.photo & F.media_group_id)
-async def ad_photo(
+async def ad_photo_group(
     msg: types.Message,
     state: FSMContext,
     bot: Bot,
@@ -132,13 +132,14 @@ async def ad_description(
 
 # new ad's price
 @router.message(CreateAdForm.price, (F.text.isdigit()) & (F.text.cast(int) <= 10000))
-async def ad_description(
+async def ad_price(
         msg: types.Message,
         state: FSMContext,
         bot: Bot,
         db: Repository
 ):
     form_data = await state.get_data()
+    msg_on_delete_id = form_data["msg_on_delete"]
 
     try:
         del form_data["msg_on_delete"]
@@ -154,7 +155,7 @@ async def ad_description(
             reply_markup=mp.main_menu
         )
     try:
-        await bot.delete_message(msg.from_user.id, (await state.get_data())["msg_on_delete"])
+        await bot.delete_message(msg.from_user.id, msg_on_delete_id)
     except TelegramNotFound:
         pass
     await msg.answer("Ваше объявление было успешно добавлено", reply_markup=mp.main_menu)
@@ -175,5 +176,5 @@ async def break_ad_creating(
 
 
 @router.message(CreateAdForm.photo, ~F.photo)
-async def incorrect_ad_data_format(msg: types.Message):
+async def invalid_data_on_photo_state(msg: types.Message):
     await msg.answer("Некорректный тип данных, ожидалось photo", reply_markup=mp.ad_creating_keyboard)

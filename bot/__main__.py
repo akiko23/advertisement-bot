@@ -18,8 +18,6 @@ from bot.handlers.admin import admin_main_router
 from bot.consts import LOGGING_FORMAT
 from bot.config_reader import config
 
-from bot.db.config_reader import config as db_config
-
 
 async def main():
     logging.basicConfig(
@@ -27,7 +25,7 @@ async def main():
         format=LOGGING_FORMAT
     )
     # initialise database connection
-    engine = create_async_engine(db_config.postgres_dsn, future=True, echo=False)
+    engine = create_async_engine(config.postgres_dsn, future=True, echo=False)
     session_pool = async_sessionmaker(engine, expire_on_commit=False)
 
     dp = Dispatcher()
