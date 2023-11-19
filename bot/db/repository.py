@@ -114,11 +114,12 @@ class Repository:
         ]
 
         if need_username:
-            options_to_select.append(Advertisement.user.username)
+            options_to_select.append(User.username)
         res = await self._request_to_db(
             AsyncSession.execute,
-            select(*options_to_select).
-            where(Advertisement.advertisement_id == ad_id)
+            select(*options_to_select)
+            .join(User, Advertisement.user_id == User.user_id)
+            .where(Advertisement.advertisement_id == ad_id)
         )
         return res.first()
 
