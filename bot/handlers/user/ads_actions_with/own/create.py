@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import Bot, Router, F, types
-from aiogram.exceptions import TelegramNotFound
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 from asyncpg.exceptions import DataError
 
@@ -45,7 +45,7 @@ async def skip_adding_photo(call: types.CallbackQuery, state: FSMContext, bot: B
 
     try:
         await bot.delete_message(call.from_user.id, data["msg_on_delete"])
-    except TelegramNotFound:
+    except TelegramAPIError:
         logging.error(await state.get_data())
 
     await state.set_state(CreateAdForm.description)
@@ -69,7 +69,7 @@ async def ad_photo_group(
 
     try:
         await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
-    except TelegramNotFound:
+    except TelegramAPIError:
         logging.error(await state.get_data())
 
     await state.set_state(CreateAdForm.description)
@@ -91,7 +91,7 @@ async def ad_photo(
 
     try:
         await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
-    except TelegramNotFound:
+    except TelegramAPIError:
         logging.error(await state.get_data())
 
     await state.set_state(CreateAdForm.description)
@@ -114,7 +114,7 @@ async def ad_description(
 
     try:
         await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
-    except TelegramNotFound:
+    except TelegramAPIError:
         logging.error(await state.get_data())
 
     description, exc_msg = check_valid_description(msg.text)
@@ -156,7 +156,7 @@ async def ad_price(
         )
     try:
         await bot.delete_message(msg.from_user.id, msg_on_delete_id)
-    except TelegramNotFound:
+    except TelegramAPIError:
         pass
     await msg.answer("Ваше объявление было успешно добавлено", reply_markup=mp.main_menu)
     await state.clear()
@@ -164,9 +164,9 @@ async def ad_price(
 
 @router.callback_query(CreateAdForm(), F.data == "break_ad_creating")
 async def break_ad_creating(
-        call: types.CallbackQuery,
-        state: FSMContext,
-        bot: Bot
+    call: types.CallbackQuery,
+    state: FSMContext,
+    bot: Bot
 ):
     await state.clear()
 

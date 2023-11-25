@@ -1,5 +1,5 @@
 from aiogram import Bot, Router, F, types
-from aiogram.exceptions import TelegramNotFound
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 from bot.utils.check_valid import check_valid_msg
 from bot.db.repository import Repository
@@ -22,7 +22,7 @@ async def set_param_to_change(call: types.CallbackQuery, state: FSMContext, bot:
     for m_id in data["msgs_on_delete"]:
         try:
             await bot.delete_message(call.from_user.id, m_id)
-        except TelegramNotFound:
+        except TelegramAPIError:
             pass
     await state.set_state(EditAd.new_value)
     await state.update_data({
@@ -55,7 +55,7 @@ async def set_new_photo(
     )
     try:
         await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
-    except TelegramNotFound:
+    except TelegramAPIError:
         pass
     await state.set_data(data)
     await msg.answer("Новое значение успешно выставлено", reply_markup=mp.kb_after_edit)
@@ -82,7 +82,7 @@ async def set_new_text_value(msg: types.Message, state: FSMContext, bot: Bot, db
 
     try:
         await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
-    except TelegramNotFound:
+    except TelegramAPIError:
         pass
     await msg.answer("Новое значение успешно выставлено", reply_markup=mp.kb_after_edit)
 

@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import Bot, Router, F, types
-from aiogram.exceptions import TelegramNotFound
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 
 from bot.db.repository import Repository
@@ -24,7 +24,7 @@ async def usr_ad_watch(
     for m_id in data["msgs_on_delete"]:
         try:
             await bot.delete_message(user_id, m_id)
-        except TelegramNotFound:
+        except TelegramAPIError:
             logging.warning(await state.get_data())
             logging.error(f"On exception: {call.message.message_id}")
     data["current_ad"] += [1, -1][call.data.split(":")[1] == "prev"]
@@ -62,7 +62,7 @@ async def delete_ad(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: 
     for m_id in (await state.get_data())["msgs_on_delete"]:
         try:
             await bot.delete_message(user_id, m_id)
-        except TelegramNotFound:
+        except TelegramAPIError:
             logging.warning(await state.get_data())
             logging.info(f"On exception: {call.message.message_id}")
 
@@ -83,7 +83,7 @@ async def stop_watching(upd: types.Message | types.CallbackQuery, state: FSMCont
     for m_id in (await state.get_data()).get("msgs_on_delete", tuple()):
         try:
             await bot.delete_message(user_id, m_id)
-        except TelegramNotFound:
+        except TelegramAPIError:
             logging.warning(await state.get_data())
             logging.info(
                 f"On exception: {upd.message.message_id if isinstance(upd, types.CallbackQuery) else upd.message_id}")

@@ -1,10 +1,9 @@
 import logging
 
 from aiogram import Bot, Router, F, types
-from aiogram.exceptions import TelegramNotFound
+from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 
-from bot.db.models import Advertisement
 from bot.db.repository import Repository
 from bot.utils.watch_ads import watch_others_ads
 import bot.markups.markups as mp
@@ -51,7 +50,7 @@ async def back_to_watch_others_menu(call: types.CallbackQuery, state: FSMContext
     for m_id in data["msgs_on_delete"]:
         try:
             await bot.delete_message(user_id, m_id)
-        except TelegramNotFound:
+        except TelegramAPIError:
             logging.warning(data)
             logging.error(f"On exception: {call.message.message_id}")
     await state.set_state(WatchAllAds.choose_option)
@@ -59,12 +58,12 @@ async def back_to_watch_others_menu(call: types.CallbackQuery, state: FSMContext
 
 
 @router.callback_query(SearchForAds.on_search, F.data == "back_to_ad_menu")
-async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot, db: Repository):
+async def back_to_ad_menu(call: types.CallbackQuery, state: FSMContext, bot: Bot):
     user_id, data = call.from_user.id, await state.get_data()
     for m_id in data.get("msgs_on_delete", tuple()):
         try:
             await bot.delete_message(user_id, m_id)
-        except TelegramNotFound:
+        except TelegramAPIError:
             logging.warning(await state.get_data())
             logging.error(f"On exception: {call.message.message_id}")
     await state.clear()
