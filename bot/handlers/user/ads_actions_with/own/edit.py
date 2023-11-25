@@ -68,16 +68,19 @@ async def set_new_text_value(msg: types.Message, state: FSMContext, bot: Bot, db
         case "photo":
             return await msg.answer("Incorrect format", reply_markup=mp.break_ad_editing_keyb)
         case "price":
-            new_val, exc_msg = check_valid_price(msg.text)
-            if exc_msg:
-                return await msg.answer(exc_msg, reply_markup=mp.break_ad_editing_keyb)
-        case _:
-            new_val, exc_msg = check_valid_msg(msg.text)
-            if exc_msg:
+            new_val, err = check_valid_price(msg.text)
+            if err:
+                return await msg.answer(err, reply_markup=mp.break_ad_editing_keyb)
+        case "title" | "description":
+            new_val, err = check_valid_msg(msg.text)
+            if err:
                 return await msg.answer(
-                    exc_msg,
+                    err,
                     reply_markup=mp.break_ad_editing_keyb
                 )
+        case _:
+            new_val = None
+
     await db.update_ad_param(ad_for_edit=data["ad_for_edit"], column_name=data["param_to_change"], content=new_val)
 
     try:
