@@ -3,6 +3,7 @@ from sqlalchemy import ScalarResult, delete, select, insert, update
 
 from typing import Callable, List
 from pydantic import UUID3
+from sqlalchemy.exc import DataError, DBAPIError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine.result import ChunkedIteratorResult
@@ -19,8 +20,13 @@ class Repository:
 
     async def _request_to_db(self, func: Callable, query: str) -> ChunkedIteratorResult:
         async with self._session_pool() as session:
-            async with session.begin():
-                return await (getattr(session, func.__name__))(query)
+            try:
+                res = await (getattr(session, func.__name__))(query)
+                return res
+            except DBAPIError:
+                await session.rollback()
+            else:
+                await session.commit()
 
     async def add_user(self, user_id, username):
         await self._request_to_db(
