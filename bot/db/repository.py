@@ -24,12 +24,12 @@ class Repository:
         async with self._session_pool() as session:
             try:
                 res = await (getattr(session, func.__name__))(query)
+                await session.commit()
+
                 return res
             except DBAPIError as e:
                 logger.error(f'Db error: {e}')
                 await session.rollback()
-            else:
-                await session.commit()
 
     async def add_user(self, user_id, username):
         await self._request_to_db(
