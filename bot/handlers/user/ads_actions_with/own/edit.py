@@ -94,7 +94,7 @@ async def back_to_watching_ads_before_editing(call: types.CallbackQuery, state: 
     usr_ads = await db.get_user_ads(call.from_user.id)
     current_ad = data["current_ad"]
 
-    title, photo, descripton, price = await db.get_ad_by_id(data["ad_for_edit"])
+    title, photo, descripton, price = await db.get_ad_by_id(data["ad_for_edit"].advertisement_id)
 
     await state.set_state(WatchUserAds.on_watch)
     await state.update_data({
