@@ -166,7 +166,7 @@ async def ad_price(
 @router.message(CreateAdForm.price)
 async def invalid_ad_price(msg: types.Message):
     await msg.answer(
-        'Некорректный формат.\n.Цена должна быть числом и не должна превышать 10000$',
+        '❗️Некорректный формат.\nЦена должна быть числом и не должна превышать 10000$',
         reply_markup=mp.ad_creating_keyboard
     )
 
