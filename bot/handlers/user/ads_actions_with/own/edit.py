@@ -1,7 +1,7 @@
 from aiogram import Bot, Router, F, types
 from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
-from bot.utils.check_valid import check_valid_msg
+from bot.utils.check_valid import check_valid_msg, check_valid_text_param
 from bot.db.repository import Repository
 from bot.utils.check_valid import check_valid_price
 
@@ -64,22 +64,16 @@ async def set_new_photo(
 @router.message(EditAd.new_value, F.text)
 async def set_new_text_value(msg: types.Message, state: FSMContext, bot: Bot, db: Repository):
     data = await state.get_data()
-    match data["param_to_change"]:
-        case "photo":
-            return await msg.answer("Incorrect format", reply_markup=mp.break_ad_editing_keyb)
-        case "price":
-            new_val, err = check_valid_price(msg.text)
-            if err:
-                return await msg.answer(err, reply_markup=mp.break_ad_editing_keyb)
-        case "title" | "description":
-            new_val, err = check_valid_msg(msg.text)
-            if err:
-                return await msg.answer(
-                    err,
-                    reply_markup=mp.break_ad_editing_keyb
-                )
-        case _:
-            new_val = None
+
+    new_val, err = check_valid_text_param(
+        param_to_change=data["param_to_change"],
+        msg_text=msg.text
+    )
+    if err:
+        return await msg.answer(
+            err,
+            reply_markup=mp.break_ad_editing_keyb
+        )
 
     await db.update_ad_param(ad_for_edit=data["ad_for_edit"], column_name=data["param_to_change"], content=new_val)
 
