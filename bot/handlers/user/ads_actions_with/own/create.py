@@ -162,6 +162,15 @@ async def ad_price(
     await state.clear()
 
 
+# invalid price
+@router.message(CreateAdForm.price)
+async def invalid_ad_price(msg: types.Message):
+    await msg.answer(
+        'Некорректный формат.\n.Цена должна быть числом и не должна превышать 10000$',
+        reply_markup=mp.ad_creating_keyboard
+    )
+
+
 @router.callback_query(CreateAdForm(), F.data == "break_ad_creating")
 async def break_ad_creating(
     call: types.CallbackQuery,
