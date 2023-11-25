@@ -10,6 +10,8 @@ from sqlalchemy.engine.result import ChunkedIteratorResult
 
 from bot.db.models import Advertisement, User
 
+logger = logging.getLogger(__name__)
+
 
 class Repository:
     __slots__ = ('_session_pool',)
@@ -23,7 +25,8 @@ class Repository:
             try:
                 res = await (getattr(session, func.__name__))(query)
                 return res
-            except DBAPIError:
+            except DBAPIError as e:
+                logger.error(f'Db error: {e}')
                 await session.rollback()
             else:
                 await session.commit()
