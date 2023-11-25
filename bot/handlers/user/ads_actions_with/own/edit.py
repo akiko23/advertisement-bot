@@ -1,9 +1,8 @@
 from aiogram import Bot, Router, F, types
 from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
-from bot.utils.check_valid import check_valid_msg, check_valid_text_param
+from bot.utils.check_valid import check_valid_text_param
 from bot.db.repository import Repository
-from bot.utils.check_valid import check_valid_price
 
 from bot.states.ad_actions import EditAd, WatchUserAds
 

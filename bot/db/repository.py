@@ -3,7 +3,7 @@ from sqlalchemy import ScalarResult, delete, select, insert, update
 
 from typing import Callable, List
 from pydantic import UUID3
-from sqlalchemy.exc import DataError, DBAPIError
+from sqlalchemy.exc import DBAPIError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine.result import ChunkedIteratorResult

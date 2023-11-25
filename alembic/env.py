@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from bot.db.models import *
+from bot.db.models import * # noqa F403
 from bot.config_reader import config as cfg
 
 # this is the Alembic Config object, which provides
@@ -23,7 +23,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = Base.metadata # noqa F405
 config.set_main_option(
     'sqlalchemy.url',
     cfg.postgres_dsn
