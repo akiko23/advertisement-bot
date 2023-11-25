@@ -1,11 +1,13 @@
-from typing import Dict, Any, Awaitable, Callable
+from typing import Dict, Any, Awaitable, Callable, TYPE_CHECKING
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
- 
 
-class DbSessionMiddleware(BaseMiddleware):
-    def __init__(self, db_obj):
+from bot.db.repository import Repository
+
+
+class DbRepoMiddleware(BaseMiddleware):
+    def __init__(self, db_obj: Repository):
         super().__init__()
         self._db_obj = db_obj
 

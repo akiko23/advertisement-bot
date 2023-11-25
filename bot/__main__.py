@@ -8,7 +8,7 @@ from aiogram.enums import ParseMode
 
 from bot.db.repository import Repository
 
-from bot.middlewares.db_session import DbSessionMiddleware
+from bot.middlewares.db_session import DbRepoMiddleware
 from bot.middlewares.media_group import MediaGroupMiddleware
 
 from bot.handlers.options import router as options_router
@@ -32,7 +32,7 @@ async def main():
 
     # setup middlewares
     dp.message.middleware(MediaGroupMiddleware())
-    dp.update.middleware(DbSessionMiddleware(db_obj=Repository(pool=session_pool)))
+    dp.update.middleware(DbRepoMiddleware(db_obj=Repository(pool=session_pool)))
 
     dp.include_routers(options_router, usr_main_router, admin_main_router)
 
