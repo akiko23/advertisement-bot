@@ -65,8 +65,9 @@ async def set_new_photo(
 async def set_new_text_value(msg: types.Message, state: FSMContext, bot: Bot, db: Repository):
     data = await state.get_data()
 
+    param_to_change = data["param_to_change"]
     new_val, err = check_valid_text_param(
-        param_to_change=data["param_to_change"],
+        param_to_change=param_to_change,
         msg_text=msg.text
     )
     if err:
@@ -75,7 +76,7 @@ async def set_new_text_value(msg: types.Message, state: FSMContext, bot: Bot, db
             reply_markup=mp.break_ad_editing_keyb
         )
 
-    await db.update_ad_param(ad_for_edit=data["ad_for_edit"], column_name=data["param_to_change"], content=new_val)
+    await db.update_ad_param(ad_for_edit=data["ad_for_edit"], column_name=param_to_change, content=new_val)
 
     try:
         await bot.delete_message(msg.from_user.id, data["msg_on_delete"])
