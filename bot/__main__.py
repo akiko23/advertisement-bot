@@ -24,15 +24,16 @@ async def main():
         level=logging.INFO,
         format=LOGGING_FORMAT
     )
+
     # initialise database connection
     engine = create_async_engine(config.postgres_dsn, future=True, echo=False)
-    session_pool = async_sessionmaker(engine, expire_on_commit=False)
+    session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
     dp = Dispatcher()
 
     # setup middlewares
     dp.message.middleware(MediaGroupMiddleware())
-    dp.update.middleware(DbRepoMiddleware(db_obj=Repository(pool=session_pool)))
+    dp.update.middleware(DbRepoMiddleware(db_obj=Repository(pool=session_factory)))
 
     dp.include_routers(options_router, usr_main_router, admin_main_router)
 
